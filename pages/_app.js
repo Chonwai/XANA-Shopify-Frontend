@@ -1,35 +1,37 @@
-import "../styles/globals.css";
-import React from "react";
-import App from "next/app";
-import Head from "next/head";
-import { AppProvider } from "@shopify/polaris";
+import '../styles/globals.css';
+import React from 'react';
+import App from 'next/app';
+import Head from 'next/head';
+import { AppProvider } from '@shopify/polaris';
 // import { Provider, Context } from "@shopify/app-bridge-react";
-import { authenticatedFetch } from "@shopify/app-bridge-utils";
-import "@shopify/polaris/dist/styles.css";
-import translations from "@shopify/polaris/locales/en.json";
-import ApolloClient from "apollo-boost";
-import { ApolloProvider } from "react-apollo";
+import { authenticatedFetch } from '@shopify/app-bridge-utils';
+import '@shopify/polaris/dist/styles.css';
+import translations from '@shopify/polaris/locales/en.json';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from 'react-apollo';
 
 function userLoggedInFetch(app) {
-  const fetchFunction = authenticatedFetch(app);
+    const fetchFunction = authenticatedFetch(app);
 
-  return async (uri, options) => {
-    const response = await fetchFunction(uri, options);
+    return async (uri, options) => {
+        const response = await fetchFunction(uri, options);
 
-    if (
-      response.headers.get("X-Shopify-API-Request-Failure-Reauthorize") === "1"
-    ) {
-      const authUrlHeader = response.headers.get(
-        "X-Shopify-API-Request-Failure-Reauthorize-Url"
-      );
+        if (
+            response.headers.get(
+                'X-Shopify-API-Request-Failure-Reauthorize',
+            ) === '1'
+        ) {
+            const authUrlHeader = response.headers.get(
+                'X-Shopify-API-Request-Failure-Reauthorize-Url',
+            );
 
-      const redirect = Redirect.create(app);
-      redirect.dispatch(Redirect.Action.APP, authUrlHeader || `/auth`);
-      return null;
-    }
+            const redirect = Redirect.create(app);
+            redirect.dispatch(Redirect.Action.APP, authUrlHeader || `/auth`);
+            return null;
+        }
 
-    return response;
-  };
+        return response;
+    };
 }
 
 // class MyProvider extends React.Component {
@@ -54,20 +56,20 @@ function userLoggedInFetch(app) {
 // }
 
 class MyApp extends App {
-  render() {
-    const { Component, pageProps } = this.props;
-    return (
-      <React.Fragment>
-        <Head>
-          <title>Sample App</title>
-          <meta charSet="utf-8" />
-        </Head>
-        <AppProvider i18n={translations}>
-          <Component {...pageProps} />
-        </AppProvider>
-      </React.Fragment>
-    );
-  }
+    render() {
+        const { Component, pageProps } = this.props;
+        return (
+            <React.Fragment>
+                <Head>
+                    <title>Sample App</title>
+                    <meta charSet="utf-8" />
+                </Head>
+                <AppProvider i18n={translations}>
+                    <Component {...pageProps} />
+                </AppProvider>
+            </React.Fragment>
+        );
+    }
 }
 
 export default MyApp;
