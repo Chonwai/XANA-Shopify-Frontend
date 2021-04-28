@@ -2,12 +2,15 @@ import { useEffect } from 'react';
 import React from 'react';
 import { ResourcePicker, TitleBar } from '@shopify/app-bridge-react';
 import { EmptyState, Layout, Page, TextStyle } from '@shopify/polaris';
+import store from 'store-js';
+import ResourceListWithProducts from '../components/ResourceList';
 
 const img = 'https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg';
 
 class Index extends React.Component {
     state = { open: false };
     render() {
+        const emptyState = !store.get('ids');
         return (
             <Page>
                 <TitleBar
@@ -37,12 +40,18 @@ class Index extends React.Component {
                         </p>
                     </EmptyState>
                 </Layout>
+                <ResourceListWithProducts />
             </Page>
         );
     }
     handleSelection = (resources) => {
+        const idsFromResources = resources.selection.map(
+            (product) => product.id,
+        );
         this.setState({ open: false });
         console.log(resources);
+        console.log(idsFromResources);
+        store.set('ids', idsFromResources);
     };
 }
 
